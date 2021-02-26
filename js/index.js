@@ -56,23 +56,24 @@ function statement(invoice, plays){
     for(let perf of invoice.performances){
         //找到表演者信息
         const play = plays[perf.playID];
+
         let thisAmount = 0;
 
         //1.如果表演类型为悲剧，起价40000，如果观看人数大于30人，每多出一人收1000块
         //2.如果表演类型为喜剧，起价30000，每个座位都收取300的座位费，如果观看人数大于20人，则多收10000的费用以及每个超出的座位收500块
         switch(play.type){
             case "tragedy":
-                this.Amount = 40000;
+                thisAmount = 40000;
                 if(perf.audience > 30){
-                    this.Amount += 1000 * (perf.audience - 30)
+                    thisAmount += 1000 * (perf.audience - 30)
                 }
                 break;
             case "comedy":
                 this.Amount = 30000
                 if(perf.audience > 20){
-                    this.Amount += 10000 + 500*(perf.audience -20) 
+                    thisAmount += 10000 + 500*(perf.audience -20) 
                 }
-                this.Amount += 300*perf.audience
+                thisAmount += 300*perf.audience
                 break;
             default:
                 throw new Error(`unknown type:${play.type}`)
