@@ -69,7 +69,7 @@ function statement(invoice, plays){
                 }
                 break;
             case "comedy":
-                this.Amount = 30000
+                thisAmount = 30000
                 if(perf.audience > 20){
                     thisAmount += 10000 + 500*(perf.audience -20) 
                 }
@@ -94,6 +94,9 @@ function statement(invoice, plays){
 
     return result
 }
+
+
+function amountFor(play, )
 
 
 console.info(statement(invoices[0],plays))
