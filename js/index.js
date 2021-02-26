@@ -1,6 +1,6 @@
 
 //表演者
-let playes = {
+let plays = {
     "hamlet": {
         name: "Hamlet",
         type: "tragedy" //悲剧
@@ -9,7 +9,7 @@ let playes = {
         name: "As You Like It",
         type: "comedy"  //喜剧
     },
-    "hamlet": {
+    "othello": {
         name: "Othello",
         type: "tragedy"
     },
@@ -37,7 +37,7 @@ let invoices = [
 ]
 
 //打印账单详情
-function statement(invoice, playes){
+function statement(invoice, plays){
     //总金额
     let totalAmount = 0;
     //积分
@@ -63,13 +63,13 @@ function statement(invoice, playes){
         switch(play.type){
             case "tragedy":
                 this.Amount = 40000;
-                if(pref.audience > 30){
+                if(perf.audience > 30){
                     this.Amount += 1000 * (perf.audience - 30)
                 }
                 break;
             case "comedy":
                 this.Amount = 30000
-                if(pre.audience > 20){
+                if(perf.audience > 20){
                     this.Amount += 10000 + 500*(perf.audience -20) 
                 }
                 this.Amount += 300*perf.audience
@@ -84,7 +84,7 @@ function statement(invoice, playes){
             volumeCredits += Math.floor(perf.audience/5)
         }
 
-        result += `${play.name}: ${format(thisAmount/100)} (${pref.audience} seats)\n`
+        result += `${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`
         totalAmount += thisAmount
     }
 
@@ -93,3 +93,6 @@ function statement(invoice, playes){
 
     return result
 }
+
+
+console.info(statement(invoices[0],plays))
