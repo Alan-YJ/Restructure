@@ -96,7 +96,5 @@ function statement(invoice, plays){
 }
 
 
-function amountFor(play, )
-
 
 console.info(statement(invoices[0],plays))
