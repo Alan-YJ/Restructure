@@ -1,4 +1,3 @@
-
 //表演者
 let plays = {
     "hamlet": {
@@ -36,16 +35,16 @@ let invoices = [
     }
 ]
 
-function statement(invoice){
-    return renderPlainText(createStatementData(invoice))
-}
-
 function usd(aNumber){
     return new Intl.NumberFormat("en-US", {
         style: "currency",  //带货币符号
         currency: "USD",    //币种
         minimumFractionDigits: 2    //小数点位数
     }).format(aNumber/100)
+}
+
+function statement(invoice){
+    return renderPlainText(createStatementData(invoice))
 }
 
 //打印账单详情
@@ -63,4 +62,26 @@ function renderPlainText(data){
     return result
 }
 
+function htmlStatement(invoice){
+    return renderHtml(createStatementData(invoice))
+}
+
+function renderHtml(data){
+    let result = `<h1>Statement for ${data.customer}</h1>`
+
+    result += "<table>\n"
+    result += "<tr><th>play</th><th>seats</th><th>cost</th></tr>"
+
+    for(let perf of data.performances){
+        result += `<tr><td>${perf.play.name}</td><td>${perf.audience}</td><td>${usd(perf.amount)}</td></tr>`
+    }
+
+    result += "</table>\n"
+    result += `<p>Amount owed is <em>${usd(data.totalAmount)}</em></p>\n`
+    result += `<p>You earned <em>${usd(data.totalVolumeCredits)}</em> credits</p>\n`
+    return result
+}
+
 console.info(statement(invoices[0],plays))
+
+document.write(htmlStatement(invoices[0]))
