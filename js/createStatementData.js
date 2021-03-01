@@ -1,18 +1,71 @@
 
+class PerformanceCalculator{
+    constructor(aPerformance, play){
+        this.performance = aPerformance
+        this.play = play
+    }
+    get amount(){
+        throw new Error('调用子类方法')
+    }
+    get volumeCredits(){
+        return Math.max(this.performance.audience - 30, 0)
+    }
+}
+
+class TragedyCalculator extends PerformanceCalculator{
+    //悲剧类型，起价40000，如果观看人数大于30人，每多出一人收1000块
+    get amount(){
+        result = 40000;
+        if(this.performance.audience > 30){
+            result += 1000 * (this.performance.audience - 30)
+        }
+    }
+}
+
+class ComedyCalculator extends PerformanceCalculator{
+    //喜剧类型，起价30000，每个座位都收取300的座位费，如果观看人数大于20人，则多收10000的费用以及每个超出的座位收500块
+    get amount(){
+        result = 30000
+        if(this.performance.audience > 20){
+            result += 10000 + 500*(this.performance.audience -20) 
+        }
+        result += 300*this.performance.audience
+    }
+    get volumeCredits(){
+        return super.volumeCredits + Math.floor(this.performance.audience /5)
+    }
+}
+
+function createPerformanceCalculator(aPerformance, play){
+    switch(play.type){
+        case "tragedy":
+            return new TragedyCalculator(aPerformance, play)
+        case "comedy":
+            return new ComedyCalculator(aPerformance, play)
+        default:
+            throw new Error(`unknow type: ${play.type}`)
+    }
+}
+
+function amountFor(aPerformance){
+    return new PerformanceCalculator(aPerformance, playFor(aPerformance)).amount
+}
+
 function createStatementData(invoice){
     let statementData = {}
     statementData.customer = invoice.customer
-    statementData.performances = invoice.performances.map(setPerformance)
+    statementData.performances = invoice.performances.map(enrichPerformance)
     statementData.totalAmount = totalAmount(statementData)
     statementData.totalVolumeCredits = totalVolumeCredits(statementData)
     return statementData
 }
 
-function setPerformance(aPerformance){
+function enrichPerformance(aPerformance){
+    const calculator = createPerformanceCalculator(aPerformance, playFor(aPerformance))
     let result = Object.assign({}, aPerformance)
-    result.play = playFor(result)
-    result.amount = amountFor(result)
-    result.volumeCredits = volumeCreditsFor(result)
+    result.play = calculator.play
+    result.amount = calculator.amount
+    result.volumeCredits = calculator.volumeCredits
     return result
 }
 
@@ -20,39 +73,9 @@ function playFor(aPerformance){
     return plays[aPerformance.playID]
 }
 
-function amountFor(aPerformance){
-    let result = 0;
-    //1.如果表演类型为悲剧，起价40000，如果观看人数大于30人，每多出一人收1000块
-    //2.如果表演类型为喜剧，起价30000，每个座位都收取300的座位费，如果观看人数大于20人，则多收10000的费用以及每个超出的座位收500块
-    switch(aPerformance.play.type){
-        case "tragedy":
-            result = 40000;
-            if(aPerformance.audience > 30){
-                result += 1000 * (aPerformance.audience - 30)
-            }
-            break;
-        case "comedy":
-            result = 30000
-            if(aPerformance.audience > 20){
-                result += 10000 + 500*(aPerformance.audience -20) 
-            }
-            result += 300*aPerformance.audience
-            break;
-        default:
-            throw new Error(`unknown type:${aPerformance.play.type}`)
-    }
-
-    return result
-}   
-
 //积分
 function volumeCreditsFor(aPerformance) {
-    let result = 0;
-    result += Math.max(aPerformance.audience - 30, 0)
-    if("comedy" === aPerformance.play.type){
-        result += Math.floor(aPerformance.audience/5)
-    }
-    return result
+    return new PerformanceCalculator(aPerformance, playFor(aPerformance)).volumeCredits
 }
 
 //总积分信息
